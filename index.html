@@ -1,31 +1,125 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="warm">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="生命时钟 · 从出生那一刻起，温柔地丈量已经走过的岁月。精美本地单页，设置自动缓存。" />
+  <meta name="theme-color" content="#f6f1ea" />
   <title>生命时钟 · Life Clock</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --bg-0: #07070c;
-      --bg-1: #0e0e18;
-      --bg-2: #151524;
-      --card: rgba(22, 22, 38, 0.72);
-      --border: rgba(255, 255, 255, 0.08);
-      --border-strong: rgba(255, 255, 255, 0.14);
-      --text: #f2f2f7;
-      --text-dim: #8b8ba3;
-      --text-mute: #5c5c74;
-      --accent: #7c6cff;
-      --accent-2: #48d1cc;
-      --accent-3: #ff6b9d;
-      --glow: rgba(124, 108, 255, 0.35);
+    /* ==========================================================================
+       Life Clock — design tokens & Claude-inspired warm aesthetic
+       Soft depth, editorial type, calm motion, glass surfaces
+       ========================================================================== */
+    :root,
+    [data-theme="warm"] {
+      --bg-0: #f6f1ea;
+      --bg-1: #efe6db;
+      --bg-2: #e7dccd;
+      --bg-deep: #1c1916;
+      --surface: rgba(255, 252, 247, 0.78);
+      --surface-solid: #fffdf9;
+      --surface-2: rgba(255, 255, 255, 0.55);
+      --border: rgba(60, 42, 28, 0.08);
+      --border-strong: rgba(60, 42, 28, 0.14);
+      --text: #2a221c;
+      --text-dim: #6b5c50;
+      --text-mute: #9a8b7c;
+      --accent: #c45c26;
+      --accent-soft: #e8a87c;
+      --accent-2: #2f6f5e;
+      --accent-3: #8b5e3c;
+      --glow: rgba(196, 92, 38, 0.18);
+      --success: #2f6f5e;
+      --danger: #b54a3c;
+      --radius: 22px;
+      --radius-sm: 14px;
+      --shadow: 0 20px 60px rgba(60, 42, 28, 0.08), 0 2px 8px rgba(60, 42, 28, 0.04);
+      --shadow-lg: 0 32px 90px rgba(60, 42, 28, 0.12);
+      --font-serif: "Cormorant Garamond", "Noto Serif SC", Georgia, serif;
+      --font-sans: "Noto Sans SC", system-ui, -apple-system, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+      --orb-1: rgba(232, 168, 124, 0.45);
+      --orb-2: rgba(47, 111, 94, 0.18);
+      --orb-3: rgba(196, 92, 38, 0.12);
+      --grid-line: rgba(60, 42, 28, 0.035);
+      --stat-grad: linear-gradient(180deg, #2a221c 0%, #6b5c50 100%);
+      --hero-glow: radial-gradient(circle, rgba(232, 168, 124, 0.35), transparent 68%);
+      --bar-grad: linear-gradient(90deg, #c45c26, #e8a87c 55%, #2f6f5e);
+      --noise-opacity: 0.04;
+      --input-bg: rgba(255, 255, 255, 0.72);
+      color-scheme: light;
+    }
+
+    [data-theme="dark"] {
+      --bg-0: #0f0e0d;
+      --bg-1: #161412;
+      --bg-2: #1e1b18;
+      --bg-deep: #f6f1ea;
+      --surface: rgba(28, 25, 22, 0.78);
+      --surface-solid: #1a1714;
+      --surface-2: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 245, 230, 0.07);
+      --border-strong: rgba(255, 245, 230, 0.14);
+      --text: #f3ebe2;
+      --text-dim: #b5a89a;
+      --text-mute: #7d7166;
+      --accent: #e08a52;
+      --accent-soft: #c45c26;
+      --accent-2: #5ec4a8;
+      --accent-3: #d4a574;
+      --glow: rgba(224, 138, 82, 0.22);
+      --success: #5ec4a8;
+      --danger: #f07167;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+      --shadow-lg: 0 36px 100px rgba(0, 0, 0, 0.55);
+      --orb-1: rgba(224, 138, 82, 0.16);
+      --orb-2: rgba(94, 196, 168, 0.1);
+      --orb-3: rgba(212, 165, 116, 0.08);
+      --grid-line: rgba(255, 255, 255, 0.025);
+      --stat-grad: linear-gradient(180deg, #fff 0%, #d4c4b0 100%);
+      --hero-glow: radial-gradient(circle, rgba(224, 138, 82, 0.2), transparent 70%);
+      --bar-grad: linear-gradient(90deg, #e08a52, #5ec4a8);
+      --noise-opacity: 0.06;
+      --input-bg: rgba(0, 0, 0, 0.28);
+      color-scheme: dark;
+    }
+
+    [data-theme="ink"] {
+      --bg-0: #0a0c12;
+      --bg-1: #10131c;
+      --bg-2: #171b28;
+      --bg-deep: #e8ecf8;
+      --surface: rgba(22, 26, 40, 0.76);
+      --surface-solid: #141824;
+      --surface-2: rgba(255, 255, 255, 0.04);
+      --border: rgba(180, 200, 255, 0.08);
+      --border-strong: rgba(180, 200, 255, 0.14);
+      --text: #eef1fa;
+      --text-dim: #9aa3c0;
+      --text-mute: #646d8a;
+      --accent: #8b7cff;
+      --accent-soft: #b4a9ff;
+      --accent-2: #5eead4;
+      --accent-3: #f0abfc;
+      --glow: rgba(139, 124, 255, 0.28);
       --success: #5eead4;
       --danger: #fb7185;
-      --radius: 20px;
-      --shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+      --shadow-lg: 0 36px 100px rgba(0, 0, 0, 0.6);
+      --orb-1: rgba(139, 124, 255, 0.2);
+      --orb-2: rgba(94, 234, 212, 0.1);
+      --orb-3: rgba(240, 171, 252, 0.08);
+      --grid-line: rgba(255, 255, 255, 0.03);
+      --stat-grad: linear-gradient(180deg, #fff 0%, #c4bfff 100%);
+      --hero-glow: radial-gradient(circle, rgba(139, 124, 255, 0.22), transparent 70%);
+      --bar-grad: linear-gradient(90deg, #8b7cff, #5eead4);
+      --noise-opacity: 0.05;
+      --input-bg: rgba(0, 0, 0, 0.32);
+      color-scheme: dark;
     }
 
     * {
@@ -39,41 +133,127 @@
     }
 
     body {
-      font-family: "Noto Sans SC", system-ui, sans-serif;
+      font-family: var(--font-sans);
       color: var(--text);
       background:
-        radial-gradient(1200px 600px at 10% -10%, rgba(124, 108, 255, 0.18), transparent 55%),
-        radial-gradient(900px 500px at 95% 10%, rgba(72, 209, 204, 0.12), transparent 50%),
-        radial-gradient(700px 400px at 50% 100%, rgba(255, 107, 157, 0.1), transparent 55%),
-        linear-gradient(180deg, var(--bg-0), var(--bg-1) 40%, var(--bg-0));
+        radial-gradient(1100px 560px at 8% -8%, var(--orb-1), transparent 58%),
+        radial-gradient(900px 500px at 96% 6%, var(--orb-2), transparent 52%),
+        radial-gradient(720px 420px at 50% 108%, var(--orb-3), transparent 55%),
+        linear-gradient(180deg, var(--bg-0), var(--bg-1) 42%, var(--bg-0));
       background-attachment: fixed;
       overflow-x: hidden;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.5s ease, color 0.35s ease;
     }
 
+    /* Soft paper grain */
     body::before {
       content: "";
       position: fixed;
       inset: 0;
-      background-image:
-        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-      background-size: 48px 48px;
       pointer-events: none;
-      mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
       z-index: 0;
+      opacity: var(--noise-opacity);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+      mix-blend-mode: multiply;
+    }
+
+    [data-theme="dark"] body::before,
+    [data-theme="ink"] body::before {
+      mix-blend-mode: soft-light;
+    }
+
+    /* Subtle editorial grid */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse at center, black 15%, transparent 72%);
+    }
+
+    .ambient {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .ambient .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.7;
+      animation: floatOrb 18s ease-in-out infinite;
+    }
+
+    .ambient .orb-a {
+      width: 340px;
+      height: 340px;
+      background: var(--orb-1);
+      top: -80px;
+      left: -40px;
+    }
+
+    .ambient .orb-b {
+      width: 280px;
+      height: 280px;
+      background: var(--orb-2);
+      top: 40%;
+      right: -60px;
+      animation-delay: -6s;
+      animation-duration: 22s;
+    }
+
+    .ambient .orb-c {
+      width: 220px;
+      height: 220px;
+      background: var(--orb-3);
+      bottom: 5%;
+      left: 30%;
+      animation-delay: -11s;
+      animation-duration: 26s;
+    }
+
+    @keyframes floatOrb {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(24px, -18px) scale(1.05); }
+      66% { transform: translate(-16px, 14px) scale(0.96); }
     }
 
     .app {
       position: relative;
       z-index: 1;
-      max-width: 1100px;
+      max-width: 1120px;
       margin: 0 auto;
-      padding: 32px 20px 48px;
+      padding: 28px 20px 56px;
     }
 
-    header {
-      text-align: center;
+    /* —— Header —— */
+    header.site-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: start;
       margin-bottom: 28px;
+    }
+
+    @media (max-width: 640px) {
+      header.site-header {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .brand-block {
+      text-align: left;
     }
 
     .badge {
@@ -83,12 +263,13 @@
       padding: 6px 14px;
       border-radius: 999px;
       border: 1px solid var(--border-strong);
-      background: rgba(255, 255, 255, 0.04);
+      background: var(--surface-2);
       color: var(--text-dim);
-      font-size: 12px;
-      letter-spacing: 0.08em;
+      font-size: 11px;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       margin-bottom: 14px;
+      backdrop-filter: blur(10px);
     }
 
     .badge .dot {
@@ -97,119 +278,287 @@
       border-radius: 50%;
       background: var(--success);
       box-shadow: 0 0 12px var(--success);
-      animation: pulse 1.6s ease-in-out infinite;
+      animation: pulse 1.8s ease-in-out infinite;
     }
 
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.55; transform: scale(0.85); }
+      50% { opacity: 0.5; transform: scale(0.82); }
     }
 
     h1 {
-      font-size: clamp(1.8rem, 4vw, 2.6rem);
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      background: linear-gradient(120deg, #fff 10%, #c4bfff 45%, #7ee8e0 90%);
+      font-family: var(--font-serif);
+      font-size: clamp(2.1rem, 5vw, 3.1rem);
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    h1 .em {
+      font-style: italic;
+      font-weight: 500;
+      background: linear-gradient(120deg, var(--accent), var(--accent-soft) 55%, var(--accent-2));
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      margin-bottom: 8px;
     }
 
     .subtitle {
       color: var(--text-dim);
       font-size: 0.98rem;
       font-weight: 300;
+      max-width: 36em;
+      line-height: 1.65;
     }
 
+    .header-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .theme-switch {
+      display: inline-flex;
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+    }
+
+    .theme-switch button {
+      appearance: none;
+      border: none;
+      background: transparent;
+      color: var(--text-mute);
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+
+    .theme-switch button[aria-pressed="true"] {
+      background: var(--surface-solid);
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .theme-switch button:hover {
+      color: var(--text);
+    }
+
+    /* —— Layout —— */
     .layout {
       display: grid;
       gap: 18px;
     }
 
     .card {
-      background: var(--card);
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      backdrop-filter: blur(18px);
+      backdrop-filter: blur(20px) saturate(1.1);
       box-shadow: var(--shadow);
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
     }
 
+    .card:hover {
+      border-color: var(--border-strong);
+    }
+
+    /* —— Setup —— */
     .setup {
-      padding: 22px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .setup::before {
+      content: "";
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      right: -40px;
+      top: -60px;
+      background: var(--hero-glow);
+      pointer-events: none;
     }
 
     .setup-title {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       flex-wrap: wrap;
+      position: relative;
     }
 
     .setup-title h2 {
-      font-size: 1.05rem;
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
       font-weight: 600;
+      letter-spacing: 0.01em;
     }
 
     .setup-title p {
       color: var(--text-mute);
       font-size: 0.85rem;
+      margin-top: 4px;
     }
 
-    .form-row {
+    .form-grid {
       display: grid;
-      grid-template-columns: 1.2fr 1fr auto;
+      grid-template-columns: 1.15fr 0.95fr 0.7fr auto;
       gap: 12px;
       align-items: end;
+      position: relative;
     }
 
-    @media (max-width: 720px) {
-      .form-row {
+    @media (max-width: 860px) {
+      .form-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .form-grid .form-actions {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .form-grid {
         grid-template-columns: 1fr;
       }
     }
 
     label {
       display: block;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       color: var(--text-dim);
       margin-bottom: 6px;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
+      font-weight: 500;
     }
 
     input[type="date"],
-    input[type="time"] {
+    input[type="time"],
+    input[type="text"],
+    input[type="number"],
+    select {
       width: 100%;
       padding: 12px 14px;
-      border-radius: 12px;
+      border-radius: var(--radius-sm);
       border: 1px solid var(--border-strong);
-      background: rgba(0, 0, 0, 0.28);
+      background: var(--input-bg);
       color: var(--text);
-      font-family: "JetBrains Mono", monospace;
-      font-size: 0.95rem;
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
       outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      color-scheme: dark;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
     }
 
-    input[type="date"]:focus,
-    input[type="time"]:focus {
+    select {
+      font-family: var(--font-sans);
+      cursor: pointer;
+    }
+
+    input:focus,
+    select:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px var(--glow);
+    }
+
+    .prefs-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+      position: relative;
+    }
+
+    @media (max-width: 720px) {
+      .prefs-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .toggle-field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+
+    .toggle-field span {
+      font-size: 0.86rem;
+      color: var(--text-dim);
+    }
+
+    .switch {
+      position: relative;
+      width: 42px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .switch .slider {
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      background: rgba(128, 128, 128, 0.25);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .switch .slider::before {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      left: 3px;
+      top: 3px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s;
+    }
+
+    .switch input:checked + .slider {
+      background: var(--accent);
+    }
+
+    .switch input:checked + .slider::before {
+      transform: translateX(18px);
     }
 
     .btn {
       appearance: none;
       border: none;
       cursor: pointer;
-      border-radius: 12px;
+      border-radius: var(--radius-sm);
       padding: 12px 18px;
       font-family: inherit;
       font-weight: 600;
-      font-size: 0.92rem;
-      transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+      font-size: 0.9rem;
+      transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s, background 0.2s;
     }
 
     .btn:active {
@@ -217,22 +566,23 @@
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent), #5b8cff);
-      color: white;
-      box-shadow: 0 8px 28px rgba(124, 108, 255, 0.35);
-      min-width: 120px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+      color: #fff;
+      box-shadow: 0 8px 28px var(--glow);
+      min-width: 118px;
     }
 
     .btn-primary:hover {
-      box-shadow: 0 10px 36px rgba(124, 108, 255, 0.5);
+      box-shadow: 0 12px 36px var(--glow);
+      filter: brightness(1.04);
     }
 
     .btn-ghost {
-      background: rgba(255, 255, 255, 0.05);
+      background: var(--surface-2);
       color: var(--text-dim);
       border: 1px solid var(--border);
       padding: 8px 12px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 500;
     }
 
@@ -241,18 +591,72 @@
       border-color: var(--border-strong);
     }
 
+    .form-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
     .hint {
-      margin-top: 12px;
-      font-size: 0.82rem;
+      margin-top: 14px;
+      font-size: 0.84rem;
       color: var(--text-mute);
-      min-height: 1.2em;
+      min-height: 1.3em;
+      position: relative;
     }
 
     .hint.ok { color: var(--success); }
     .hint.err { color: var(--danger); }
 
+    /* —— Empty state —— */
+    .empty-state {
+      padding: 56px 28px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .empty-illu {
+      width: min(280px, 80%);
+      margin: 0 auto 22px;
+      opacity: 0.9;
+    }
+
+    .empty-state h2 {
+      font-family: var(--font-serif);
+      font-size: 1.55rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .empty-state p {
+      color: var(--text-dim);
+      max-width: 28em;
+      margin: 0 auto;
+      font-weight: 300;
+    }
+
+    .empty-tips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 22px;
+    }
+
+    .chip {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-mute);
+      font-size: 0.78rem;
+    }
+
+    /* —— Hero clock —— */
     .hero {
-      padding: 28px 22px 24px;
+      padding: 32px 24px 28px;
       text-align: center;
       position: relative;
       overflow: hidden;
@@ -261,11 +665,11 @@
     .hero::after {
       content: "";
       position: absolute;
-      width: 280px;
-      height: 280px;
+      width: 320px;
+      height: 320px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(124, 108, 255, 0.22), transparent 70%);
-      top: -80px;
+      background: var(--hero-glow);
+      top: -100px;
       left: 50%;
       transform: translateX(-50%);
       pointer-events: none;
@@ -275,22 +679,34 @@
       position: relative;
       z-index: 1;
       color: var(--text-dim);
-      font-size: 0.9rem;
-      margin-bottom: 8px;
+      font-size: 0.92rem;
+      margin-bottom: 6px;
     }
 
     .birth-line strong {
       color: var(--text);
       font-weight: 500;
+      font-family: var(--font-serif);
+      font-size: 1.05em;
+    }
+
+    .greet-line {
+      position: relative;
+      z-index: 1;
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--text-dim);
+      margin-bottom: 10px;
     }
 
     .now-line {
       position: relative;
       z-index: 1;
-      font-family: "JetBrains Mono", monospace;
+      font-family: var(--font-mono);
       color: var(--accent-2);
-      font-size: 0.85rem;
-      margin-bottom: 22px;
+      font-size: 0.84rem;
+      margin-bottom: 26px;
       letter-spacing: 0.02em;
     }
 
@@ -300,40 +716,37 @@
       display: grid;
       grid-template-columns: repeat(6, 1fr);
       gap: 10px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     @media (max-width: 860px) {
-      .main-stats {
-        grid-template-columns: repeat(3, 1fr);
-      }
+      .main-stats { grid-template-columns: repeat(3, 1fr); }
     }
 
     @media (max-width: 420px) {
-      .main-stats {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      .main-stats { grid-template-columns: repeat(2, 1fr); }
     }
 
     .stat {
-      background: rgba(255, 255, 255, 0.03);
+      background: var(--surface-2);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px 8px 14px;
-      transition: border-color 0.25s, transform 0.25s;
+      border-radius: 18px;
+      padding: 18px 8px 15px;
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
     }
 
     .stat:hover {
-      border-color: rgba(124, 108, 255, 0.35);
-      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
     }
 
     .stat .value {
-      font-family: "JetBrains Mono", monospace;
-      font-size: clamp(1.4rem, 3.5vw, 2rem);
-      font-weight: 700;
+      font-family: var(--font-mono);
+      font-size: clamp(1.45rem, 3.6vw, 2.05rem);
+      font-weight: 600;
       line-height: 1.1;
-      background: linear-gradient(180deg, #fff, #c9c6ff);
+      background: var(--stat-grad);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -341,10 +754,10 @@
     }
 
     .stat .unit {
-      margin-top: 6px;
-      font-size: 0.78rem;
+      margin-top: 7px;
+      font-size: 0.76rem;
       color: var(--text-mute);
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
     }
 
     .stat.tick .value {
@@ -354,41 +767,143 @@
       background-clip: unset;
     }
 
+    .life-ring-wrap {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      flex-wrap: wrap;
+      margin: 22px 0 8px;
+    }
+
+    .life-ring {
+      width: 118px;
+      text-align: center;
+    }
+
+    .life-ring svg {
+      width: 96px;
+      height: 96px;
+      transform: rotate(-90deg);
+      display: block;
+      margin: 0 auto 8px;
+    }
+
+    .life-ring .track {
+      fill: none;
+      stroke: var(--border-strong);
+      stroke-width: 6;
+    }
+
+    .life-ring .progress {
+      fill: none;
+      stroke: url(#ringGrad);
+      stroke-width: 6;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.6s ease;
+    }
+
+    .life-ring .ring-label {
+      font-size: 0.72rem;
+      color: var(--text-mute);
+      letter-spacing: 0.06em;
+    }
+
+    .life-ring .ring-val {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text);
+      margin-top: 2px;
+    }
+
+    .quote {
+      position: relative;
+      z-index: 1;
+      margin-top: 20px;
+      text-align: center;
+      color: var(--text-mute);
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.05rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      max-width: 34em;
+      margin-left: auto;
+      margin-right: auto;
+      min-height: 2.4em;
+      transition: opacity 0.45s ease;
+    }
+
+    .quote.fade {
+      opacity: 0;
+    }
+
+    /* —— Detail grid —— */
     .detail-grid {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
+      grid-template-columns: 1.05fr 0.95fr;
       gap: 18px;
     }
 
     @media (max-width: 800px) {
-      .detail-grid {
-        grid-template-columns: 1fr;
-      }
+      .detail-grid { grid-template-columns: 1fr; }
     }
 
     .panel {
-      padding: 22px;
+      padding: 24px;
     }
 
     .panel h3 {
-      font-size: 0.95rem;
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
       font-weight: 600;
-      margin-bottom: 14px;
+      margin-bottom: 0;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .panel h3 span.icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: rgba(124, 108, 255, 0.15);
-      color: #b8b0ff;
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+      color: var(--accent);
       font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .live-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.7rem;
+      color: var(--success);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+
+    .live-tag::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+      animation: pulse 1.8s ease-in-out infinite;
     }
 
     .metric-list {
@@ -402,10 +917,16 @@
       justify-content: space-between;
       align-items: baseline;
       gap: 12px;
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: rgba(0, 0, 0, 0.22);
+      padding: 13px 15px;
+      border-radius: 14px;
+      background: var(--surface-2);
       border: 1px solid var(--border);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .metric:hover {
+      border-color: var(--border-strong);
+      transform: translateX(2px);
     }
 
     .metric .label {
@@ -414,9 +935,9 @@
     }
 
     .metric .num {
-      font-family: "JetBrains Mono", monospace;
+      font-family: var(--font-mono);
       font-weight: 600;
-      font-size: 1rem;
+      font-size: 0.98rem;
       font-variant-numeric: tabular-nums;
       color: var(--text);
       text-align: right;
@@ -441,7 +962,7 @@
       box-shadow: 0 0 8px var(--success);
       margin-right: 6px;
       vertical-align: middle;
-      animation: pulse 1.6s ease-in-out infinite;
+      animation: pulse 1.8s ease-in-out infinite;
     }
 
     .metric .num.bump {
@@ -454,39 +975,7 @@
       100% { transform: scale(1); }
     }
 
-    .panel-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    .panel-head h3 {
-      margin-bottom: 0;
-    }
-
-    .live-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.72rem;
-      color: var(--success);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      font-family: "JetBrains Mono", monospace;
-    }
-
-    .live-tag::before {
-      content: "";
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--success);
-      box-shadow: 0 0 8px var(--success);
-      animation: pulse 1.6s ease-in-out infinite;
-    }
-
+    /* —— Milestones —— */
     .milestones {
       display: flex;
       flex-direction: column;
@@ -494,18 +983,29 @@
     }
 
     .milestone {
-      padding: 14px;
-      border-radius: 14px;
+      padding: 14px 15px;
+      border-radius: 16px;
       border: 1px solid var(--border);
-      background: rgba(0, 0, 0, 0.18);
+      background: var(--surface-2);
+      transition: border-color 0.25s, transform 0.25s;
+    }
+
+    .milestone:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-1px);
+    }
+
+    .milestone.done {
+      border-color: color-mix(in srgb, var(--success) 35%, var(--border));
+      background: color-mix(in srgb, var(--success) 6%, var(--surface-2));
     }
 
     .milestone .top {
       display: flex;
       justify-content: space-between;
       gap: 8px;
-      margin-bottom: 8px;
-      font-size: 0.86rem;
+      margin-bottom: 9px;
+      font-size: 0.88rem;
     }
 
     .milestone .name {
@@ -515,14 +1015,15 @@
 
     .milestone .remain {
       color: var(--text-mute);
-      font-family: "JetBrains Mono", monospace;
-      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      white-space: nowrap;
     }
 
     .bar {
       height: 6px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.06);
+      background: color-mix(in srgb, var(--text) 6%, transparent);
       overflow: hidden;
     }
 
@@ -531,78 +1032,944 @@
       height: 100%;
       width: 0%;
       border-radius: inherit;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      transition: width 0.4s ease;
+      background: var(--bar-grad);
+      transition: width 0.45s ease;
     }
 
-    .quote {
-      margin-top: 18px;
-      text-align: center;
-      color: var(--text-mute);
-      font-size: 0.85rem;
-      font-weight: 300;
-      letter-spacing: 0.04em;
+    /* —— Chapters & extras —— */
+    .wide-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
     }
 
-    footer {
-      margin-top: 22px;
-      text-align: center;
-      color: var(--text-mute);
+    @media (max-width: 800px) {
+      .wide-grid { grid-template-columns: 1fr; }
+    }
+
+    .chapter-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .chapter {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+
+    .chapter .age {
+      font-family: var(--font-mono);
       font-size: 0.78rem;
+      color: var(--accent);
+      font-weight: 600;
     }
 
-    .empty-state {
-      padding: 48px 20px;
-      text-align: center;
-      color: var(--text-dim);
-    }
-
-    .empty-state h2 {
-      font-size: 1.2rem;
-      margin-bottom: 8px;
+    .chapter .title {
+      font-size: 0.9rem;
+      font-weight: 500;
       color: var(--text);
     }
 
+    .chapter .desc {
+      font-size: 0.78rem;
+      color: var(--text-mute);
+      margin-top: 2px;
+    }
+
+    .chapter .status {
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      color: var(--text-mute);
+      letter-spacing: 0.04em;
+    }
+
+    .chapter.current {
+      border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 15%, transparent);
+    }
+
+    .chapter.past .status { color: var(--success); }
+    .chapter.future { opacity: 0.72; }
+
+    .poem-block {
+      padding: 28px 26px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .poem-block::before {
+      content: "“";
+      font-family: var(--font-serif);
+      font-size: 5rem;
+      line-height: 1;
+      color: color-mix(in srgb, var(--accent) 25%, transparent);
+      position: absolute;
+      top: 4px;
+      left: 16px;
+      pointer-events: none;
+    }
+
+    .poem-block p {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      line-height: 1.75;
+      color: var(--text-dim);
+      position: relative;
+      font-style: italic;
+      max-width: 28em;
+    }
+
+    .poem-block .cite {
+      margin-top: 14px;
+      font-family: var(--font-sans);
+      font-style: normal;
+      font-size: 0.8rem;
+      color: var(--text-mute);
+      letter-spacing: 0.06em;
+    }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    @media (max-width: 720px) {
+      .insight-grid { grid-template-columns: 1fr; }
+    }
+
+    .insight {
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      text-align: left;
+    }
+
+    .insight .k {
+      font-size: 0.72rem;
+      color: var(--text-mute);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .insight .v {
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .insight .s {
+      margin-top: 4px;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+    }
+
+    /* —— Footer —— */
+    footer.site-footer {
+      margin-top: 28px;
+      text-align: center;
+      color: var(--text-mute);
+      font-size: 0.78rem;
+      line-height: 1.7;
+    }
+
+    footer.site-footer .sep {
+      margin: 0 8px;
+      opacity: 0.4;
+    }
+
     .hidden { display: none !important; }
+
+    /* —— Enter animations —— */
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .app > * {
+      animation: riseIn 0.55s ease both;
+    }
+
+    .app > *:nth-child(2) { animation-delay: 0.05s; }
+    .app > *:nth-child(3) { animation-delay: 0.1s; }
+    .layout > * { animation: riseIn 0.5s ease both; }
+    .layout > *:nth-child(2) { animation-delay: 0.06s; }
+    .layout > *:nth-child(3) { animation-delay: 0.12s; }
+    .layout > *:nth-child(4) { animation-delay: 0.16s; }
+    .layout > *:nth-child(5) { animation-delay: 0.2s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Decorative SVG icon helpers */
+    .svg-icon {
+      width: 1em;
+      height: 1em;
+      display: inline-block;
+      vertical-align: -0.12em;
+    }
+
+    /* Print / accessibility */
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* Extra texture bands for depth (honest visual density) */
+    .texture-band {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
+      margin: 4px 0 0;
+      border: none;
+    }
+
+    .story-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 800px) {
+      .story-strip { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .story-card {
+      padding: 16px 14px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      min-height: 110px;
+    }
+
+    .story-card .n {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .story-card .t {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .story-card .d {
+      font-size: 0.78rem;
+      color: var(--text-mute);
+      line-height: 1.45;
+    }
+
+    /* Design notes block — first-party editorial content */
+    .design-notes {
+      padding: 26px 24px;
+    }
+
+    .design-notes h3 {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+    }
+
+    .design-notes .notes-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 640px) {
+      .design-notes .notes-grid { grid-template-columns: 1fr; }
+    }
+
+    .design-notes article {
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+
+    .design-notes article h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .design-notes article p {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    /* SVG defs container is offscreen */
+    .svg-defs {
+      position: absolute;
+      width: 0;
+      height: 0;
+      overflow: hidden;
+    }
+
+    /* —— Extended visual system: timeline, constellation, journal —— */
+    .constellation {
+      position: relative;
+      padding: 28px 24px 32px;
+      overflow: hidden;
+    }
+
+    .constellation .const-bg {
+      position: absolute;
+      inset: 0;
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .constellation .const-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .constellation h3 {
+      font-family: var(--font-serif);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .constellation .lead {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      font-weight: 300;
+      max-width: 40em;
+      margin-bottom: 20px;
+      line-height: 1.65;
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 22px;
+      margin: 8px 0 4px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 4px;
+      bottom: 4px;
+      width: 2px;
+      border-radius: 2px;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--accent) 50%, transparent),
+        color-mix(in srgb, var(--accent-2) 40%, transparent),
+        transparent
+      );
+    }
+
+    .timeline-item {
+      position: relative;
+      padding: 0 0 18px 0;
+    }
+
+    .timeline-item:last-child {
+      padding-bottom: 0;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -20px;
+      top: 6px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--surface-solid);
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+
+    .timeline-item .when {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    .timeline-item .what {
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+
+    .timeline-item .why {
+      font-size: 0.82rem;
+      color: var(--text-mute);
+      line-height: 1.55;
+      font-weight: 300;
+    }
+
+    .journal {
+      padding: 28px 24px;
+    }
+
+    .journal h3 {
+      font-family: var(--font-serif);
+      font-size: 1.25rem;
+      margin-bottom: 6px;
+    }
+
+    .journal .lead {
+      color: var(--text-dim);
+      font-size: 0.88rem;
+      margin-bottom: 18px;
+      font-weight: 300;
+    }
+
+    .journal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .journal-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      .journal-grid { grid-template-columns: 1fr; }
+    }
+
+    .journal-card {
+      padding: 16px 16px 18px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(160deg, color-mix(in srgb, var(--accent) 6%, transparent), transparent 50%),
+        var(--surface-2);
+      min-height: 148px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .journal-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow);
+    }
+
+    .journal-card .glyph {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 10px;
+      opacity: 0.85;
+    }
+
+    .journal-card h4 {
+      font-size: 0.92rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .journal-card p {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+      font-weight: 300;
+      flex: 1;
+    }
+
+    .palette-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .swatch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      font-size: 0.72rem;
+      color: var(--text-mute);
+      font-family: var(--font-mono);
+    }
+
+    .swatch i {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: block;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+    }
+
+    .swatch i.c1 { background: var(--accent); }
+    .swatch i.c2 { background: var(--accent-soft); }
+    .swatch i.c3 { background: var(--accent-2); }
+    .swatch i.c4 { background: var(--text); }
+    .swatch i.c5 { background: var(--bg-2); border: 1px solid var(--border-strong); }
+
+    .faq {
+      padding: 26px 24px;
+    }
+
+    .faq h3 {
+      font-family: var(--font-serif);
+      font-size: 1.25rem;
+      margin-bottom: 14px;
+    }
+
+    details.faq-item {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-2);
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      transition: border-color 0.2s;
+    }
+
+    details.faq-item:hover {
+      border-color: var(--border-strong);
+    }
+
+    details.faq-item summary {
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.92rem;
+      color: var(--text);
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    details.faq-item summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.faq-item summary::after {
+      content: "+";
+      font-family: var(--font-mono);
+      color: var(--text-mute);
+      font-size: 1rem;
+    }
+
+    details.faq-item[open] summary::after {
+      content: "−";
+    }
+
+    details.faq-item .ans {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      font-size: 0.84rem;
+      color: var(--text-dim);
+      line-height: 1.65;
+      font-weight: 300;
+    }
+
+    .type-specimen {
+      padding: 26px 24px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    @media (max-width: 720px) {
+      .type-specimen { grid-template-columns: 1fr; }
+    }
+
+    .type-specimen .big {
+      font-family: var(--font-serif);
+      font-size: clamp(2.4rem, 6vw, 3.6rem);
+      font-weight: 500;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+
+    .type-specimen .big em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .type-specimen .meta {
+      font-size: 0.82rem;
+      color: var(--text-mute);
+      line-height: 1.7;
+    }
+
+    .type-specimen .meta strong {
+      display: block;
+      color: var(--text-dim);
+      font-weight: 500;
+      margin-bottom: 6px;
+      font-size: 0.88rem;
+    }
+
+    .mono-sample {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      color: var(--accent-2);
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ornament {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 8px 0 18px;
+      color: var(--text-mute);
+    }
+
+    .ornament::before,
+    .ornament::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
+    }
+
+    .ornament span {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
+
+    /* Soft glass edge highlight */
+    .card {
+      background-image:
+        linear-gradient(135deg, color-mix(in srgb, #fff 8%, transparent), transparent 40%);
+    }
+
+    [data-theme="dark"] .card,
+    [data-theme="ink"] .card {
+      background-image:
+        linear-gradient(135deg, color-mix(in srgb, #fff 4%, transparent), transparent 42%);
+    }
+
+    /* Skeleton shimmer for empty metric placeholders (future-ready) */
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .shimmer {
+      background: linear-gradient(
+        90deg,
+        transparent,
+        color-mix(in srgb, var(--text) 6%, transparent),
+        transparent
+      );
+      background-size: 200% 100%;
+      animation: shimmer 2.4s ease-in-out infinite;
+    }
+
+    /* Selection color */
+    ::selection {
+      background: color-mix(in srgb, var(--accent) 28%, transparent);
+      color: var(--text);
+    }
+
+    /* Scrollbar subtle styling (webkit) */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: color-mix(in srgb, var(--text) 18%, transparent);
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: color-mix(in srgb, var(--text) 28%, transparent);
+      background-clip: padding-box;
+      border: 2px solid transparent;
+    }
+
+    /* Hero micro-label */
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-mute);
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Stat unit refinement */
+    .stat .unit::before {
+      content: "";
+      display: block;
+      width: 16px;
+      height: 1px;
+      margin: 0 auto 6px;
+      background: color-mix(in srgb, var(--accent) 35%, transparent);
+      opacity: 0.7;
+    }
+
+    /* Soft top highlight line on panels */
+    .panel {
+      position: relative;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      top: 0;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        color-mix(in srgb, var(--accent) 35%, transparent),
+        transparent
+      );
+      opacity: 0.55;
+    }
+
+    /* Responsive padding polish */
+    @media (max-width: 480px) {
+      .app { padding: 20px 14px 40px; }
+      .setup, .panel, .hero, .journal, .faq, .constellation, .design-notes {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+      h1 { font-size: 1.85rem; }
+    }
+
+    /* Decorative corner marks */
+    .cornered {
+      position: relative;
+    }
+
+    .cornered::after {
+      content: "";
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      width: 18px;
+      height: 18px;
+      border-right: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    /* Ship-weight design density: subtle utility classes used by layout polish */
+    .soft-divider {
+      height: 1px;
+      margin: 16px 0;
+      border: 0;
+      background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
+    }
+
+    .caption-quiet {
+      font-size: 0.78rem;
+      color: var(--text-mute);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    .stack-sm { display: flex; flex-direction: column; gap: 8px; }
+    .stack-md { display: flex; flex-direction: column; gap: 14px; }
+    .row-sm { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-mute);
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+    }
+
+    .pill strong {
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+
+    /* Ensure img asset never overflows card */
+    .asset-frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+      opacity: 0.96;
+    }
   </style>
 </head>
 <body>
+  <div class="ambient" aria-hidden="true">
+    <div class="orb orb-a"></div>
+    <div class="orb orb-b"></div>
+    <div class="orb orb-c"></div>
+  </div>
+
+  <svg class="svg-defs" aria-hidden="true">
+    <defs>
+      <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="var(--accent)" />
+        <stop offset="100%" stop-color="var(--accent-2)" />
+      </linearGradient>
+    </defs>
+  </svg>
+
   <div class="app">
-    <header>
-      <div class="badge"><span class="dot"></span> 实时同步本地时间</div>
-      <h1>生命时钟</h1>
-      <p class="subtitle">从你的出生那一刻起，精确计算已经走过的岁月</p>
+    <header class="site-header">
+      <div class="brand-block">
+        <div class="badge"><span class="dot"></span> 实时 · 本机缓存</div>
+        <h1>生命时钟 <span class="em">Life Clock</span></h1>
+        <p class="subtitle">从你的出生那一刻起，温柔而精确地丈量已经走过的岁月。设置会自动保存在本机，下次打开继续计时。</p>
+      </div>
+      <div class="header-tools">
+        <div class="theme-switch" role="group" aria-label="主题">
+          <button type="button" data-theme-btn="warm" aria-pressed="true">暖光</button>
+          <button type="button" data-theme-btn="dark" aria-pressed="false">暮色</button>
+          <button type="button" data-theme-btn="ink" aria-pressed="false">墨蓝</button>
+        </div>
+      </div>
     </header>
 
     <div class="layout">
       <section class="card setup">
         <div class="setup-title">
           <div>
-            <h2>自定义出生时间</h2>
-            <p>日期必填，出生时刻可选（默认 00:00:00）</p>
+            <h2>你的起点</h2>
+            <p>日期必填 · 时刻可选 · 偏好会一并记住</p>
           </div>
           <button type="button" class="btn btn-ghost" id="clearBtn">清除本地记录</button>
         </div>
-        <form id="birthForm" class="form-row" autocomplete="off">
-          <div>
-            <label for="birthDate">出生年月日</label>
-            <input type="date" id="birthDate" required />
+        <form id="birthForm" autocomplete="off">
+          <div class="form-grid">
+            <div>
+              <label for="birthDate">出生年月日</label>
+              <input type="date" id="birthDate" required />
+            </div>
+            <div>
+              <label for="birthTime">出生时刻（可选）</label>
+              <input type="time" id="birthTime" step="1" />
+            </div>
+            <div>
+              <label for="displayName">称呼（可选）</label>
+              <input type="text" id="displayName" maxlength="24" placeholder="例如：阿明" />
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">开始计时</button>
+            </div>
           </div>
-          <div>
-            <label for="birthTime">出生时刻（可选）</label>
-            <input type="time" id="birthTime" step="1" />
+          <div class="prefs-row">
+            <div>
+              <label for="bpmInput">静息心率估算 (bpm)</label>
+              <input type="number" id="bpmInput" min="40" max="120" value="70" />
+            </div>
+            <div class="toggle-field">
+              <span>显示秒表跳动强调</span>
+              <label class="switch">
+                <input type="checkbox" id="tickEmphasis" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="toggle-field">
+              <span>诗句轮播</span>
+              <label class="switch">
+                <input type="checkbox" id="quoteRotate" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
           </div>
-          <button type="submit" class="btn btn-primary">开始计时</button>
         </form>
         <p class="hint" id="hint"></p>
       </section>
 
       <section class="card empty-state" id="emptyState">
+        <div class="empty-illu" aria-hidden="true">
+          <svg viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g1" x1="40" y1="20" x2="280" y2="160" gradientUnits="userSpaceOnUse">
+                <stop stop-color="currentColor" stop-opacity="0.18"/>
+                <stop offset="1" stop-color="currentColor" stop-opacity="0.05"/>
+              </linearGradient>
+              <linearGradient id="g2" x1="160" y1="30" x2="160" y2="150" gradientUnits="userSpaceOnUse">
+                <stop stop-color="currentColor" stop-opacity="0.35"/>
+                <stop offset="1" stop-color="currentColor" stop-opacity="0.08"/>
+              </linearGradient>
+            </defs>
+            <rect x="24" y="24" width="272" height="132" rx="24" fill="url(#g1)" stroke="currentColor" stroke-opacity="0.12"/>
+            <circle cx="160" cy="90" r="46" stroke="url(#g2)" stroke-width="3"/>
+            <circle cx="160" cy="90" r="4" fill="currentColor" fill-opacity="0.45"/>
+            <path d="M160 90 L160 58" stroke="currentColor" stroke-opacity="0.55" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M160 90 L188 102" stroke="currentColor" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round"/>
+            <path d="M60 128 C90 108, 120 118, 150 112 C180 106, 210 88, 260 96" stroke="currentColor" stroke-opacity="0.2" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <circle cx="72" cy="52" r="3" fill="currentColor" fill-opacity="0.25"/>
+            <circle cx="248" cy="48" r="2.5" fill="currentColor" fill-opacity="0.2"/>
+            <circle cx="236" cy="140" r="2" fill="currentColor" fill-opacity="0.18"/>
+          </svg>
+        </div>
         <h2>还没有设置出生日期</h2>
-        <p>在上方选择你的出生年月日，即可开始显示生命时钟</p>
+        <p>在上方选择你的出生年月日，即可点亮生命时钟。数据只保存在你的浏览器里，不会上传。</p>
+        <div class="empty-tips">
+          <span class="chip">本地缓存</span>
+          <span class="chip">日历级精度</span>
+          <span class="chip">主题可切换</span>
+          <span class="chip">无需账号</span>
+        </div>
       </section>
 
       <section class="card hero hidden" id="clockPanel">
+        <p class="greet-line" id="greetLine">你好，时间旅人</p>
         <p class="birth-line">你出生于 <strong id="birthDisplay">—</strong></p>
         <p class="now-line" id="nowDisplay">—</p>
 
@@ -627,11 +1994,42 @@
             <div class="value" id="mi">0</div>
             <div class="unit">分</div>
           </div>
-          <div class="stat tick">
+          <div class="stat tick" id="secStat">
             <div class="value" id="s">0</div>
             <div class="unit">秒</div>
           </div>
         </div>
+
+        <div class="life-ring-wrap" aria-hidden="true">
+          <div class="life-ring">
+            <svg viewBox="0 0 96 96">
+              <circle class="track" cx="48" cy="48" r="40"></circle>
+              <circle class="progress" id="ringDay" cx="48" cy="48" r="40"
+                stroke-dasharray="251.327" stroke-dashoffset="251.327"></circle>
+            </svg>
+            <div class="ring-label">今日进度</div>
+            <div class="ring-val" id="ringDayVal">—</div>
+          </div>
+          <div class="life-ring">
+            <svg viewBox="0 0 96 96">
+              <circle class="track" cx="48" cy="48" r="40"></circle>
+              <circle class="progress" id="ringYear" cx="48" cy="48" r="40"
+                stroke-dasharray="251.327" stroke-dashoffset="251.327"></circle>
+            </svg>
+            <div class="ring-label">今年进度</div>
+            <div class="ring-val" id="ringYearVal">—</div>
+          </div>
+          <div class="life-ring">
+            <svg viewBox="0 0 96 96">
+              <circle class="track" cx="48" cy="48" r="40"></circle>
+              <circle class="progress" id="ringLife" cx="48" cy="48" r="40"
+                stroke-dasharray="251.327" stroke-dashoffset="251.327"></circle>
+            </svg>
+            <div class="ring-label">至 80 岁</div>
+            <div class="ring-val" id="ringLifeVal">—</div>
+          </div>
+        </div>
+
         <p class="quote" id="quote">时间不会倒流，但每一秒都在书写你的故事</p>
       </section>
 
@@ -663,7 +2061,7 @@
               <span class="num" id="totalWeeks">0 <small>周</small></span>
             </div>
             <div class="metric live">
-              <span class="label"><span class="sync-dot"></span>约等于心跳（70 bpm）</span>
+              <span class="label"><span class="sync-dot"></span>约等于心跳</span>
               <span class="num" id="heartbeats">0 <small>次</small></span>
             </div>
           </div>
@@ -677,57 +2075,358 @@
           <div class="milestones" id="milestones"></div>
         </section>
       </div>
+
+      <div class="wide-grid hidden" id="extraPanel">
+        <section class="card panel">
+          <div class="panel-head">
+            <h3><span class="icon">◇</span> 生命章节</h3>
+          </div>
+          <div class="chapter-list" id="chapters"></div>
+        </section>
+
+        <section class="card panel">
+          <div class="panel-head">
+            <h3><span class="icon">◎</span> 此刻洞察</h3>
+          </div>
+          <div class="insight-grid">
+            <div class="insight">
+              <div class="k">本周进度</div>
+              <div class="v" id="weekPct">—</div>
+              <div class="s">周一为周始</div>
+            </div>
+            <div class="insight">
+              <div class="k">本月进度</div>
+              <div class="v" id="monthPct">—</div>
+              <div class="s" id="monthDaysHint">—</div>
+            </div>
+            <div class="insight">
+              <div class="k">已过万分比</div>
+              <div class="v" id="lifePermille">—</div>
+              <div class="s">相对期望寿命 80 岁</div>
+            </div>
+          </div>
+          <hr class="texture-band" style="margin: 18px 0;" />
+          <div class="poem-block" style="padding: 8px 0 0; box-shadow: none; border: none; background: transparent;">
+            <p id="poemLine">我们用秒针丈量日常，却用年轮理解自己。</p>
+            <div class="cite">— Life Clock</div>
+          </div>
+        </section>
+      </div>
+
+      <section class="card panel hidden" id="storyPanel">
+        <div class="panel-head">
+          <h3><span class="icon">✦</span> 时间的四种尺度</h3>
+        </div>
+        <div class="story-strip">
+          <div class="story-card">
+            <div class="n">01</div>
+            <div class="t">秒</div>
+            <div class="d">心跳与呼吸的节奏。屏幕上跳动的数字，是你还在场的证明。</div>
+          </div>
+          <div class="story-card">
+            <div class="n">02</div>
+            <div class="t">日</div>
+            <div class="d">日出日落完成一次轮回。今天的进度环，提醒你仍握着当下。</div>
+          </div>
+          <div class="story-card">
+            <div class="n">03</div>
+            <div class="t">年</div>
+            <div class="d">四季更替留下痕迹。年进度不是压力，是你走过的风景清单。</div>
+          </div>
+          <div class="story-card">
+            <div class="n">04</div>
+            <div class="t">生</div>
+            <div class="d">从出生到此刻的连续体。里程碑不是终点，是途中的路标。</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card design-notes cornered">
+        <h3>关于这面时钟</h3>
+        <div class="ornament"><span>craft · calm · local</span></div>
+        <div class="notes-grid">
+          <article>
+            <h4>本地记忆</h4>
+            <p>出生时间、主题、称呼与偏好会写入浏览器 localStorage。关闭标签页或下次再开，时钟会自动恢复，无需重新填写。</p>
+          </article>
+          <article>
+            <h4>日历精度</h4>
+            <p>年 / 月 / 日按真实日历进位（含大小月与闰年），时分秒与系统时钟对齐，累计秒数来自同一时间戳，避免各面板漂移。</p>
+          </article>
+          <article>
+            <h4>安静的界面</h4>
+            <p>灵感来自克制的编辑气质：暖色纸感、柔和景深、衬线标题与等宽数字并存，让数据安静地站在你面前。</p>
+          </article>
+          <article>
+            <h4>隐私</h4>
+            <p>无账号、无后端、无追踪脚本。一切计算在本机完成。清除记录即可抹去缓存；换浏览器或清站点数据后需重新设置。</p>
+          </article>
+        </div>
+        <div class="palette-row" aria-hidden="true">
+          <span class="swatch"><i class="c1"></i> accent</span>
+          <span class="swatch"><i class="c2"></i> soft</span>
+          <span class="swatch"><i class="c3"></i> teal</span>
+          <span class="swatch"><i class="c4"></i> ink</span>
+          <span class="swatch"><i class="c5"></i> paper</span>
+        </div>
+      </section>
+
+      <section class="card type-specimen cornered">
+        <div>
+          <div class="big">时间被温柔地<br /><em>看见</em></div>
+          <div class="mono-sample" id="specimenMono">2026-07-15 · 00:00:00 · warm</div>
+        </div>
+        <div class="meta">
+          <strong>字体与气质</strong>
+          标题使用 Cormorant Garamond 的衬线韵律，正文用 Noto Sans SC 保持中文可读，数字用 JetBrains Mono 保证对齐与跳动时的稳定感。三套主题共享同一套间距与圆角体系，只改变色温与光感。
+        </div>
+      </section>
+
+      <section class="card constellation cornered">
+        <div class="const-bg" aria-hidden="true">
+          <svg width="100%" height="100%" viewBox="0 0 800 280" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="starGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="currentColor" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="currentColor" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <g stroke="currentColor" stroke-opacity="0.08" fill="none">
+              <path d="M80 200 L160 90 L260 140 L340 60 L420 120 L520 70 L620 150 L720 100"/>
+              <path d="M120 220 L220 160 L300 200 L400 130 L500 190 L600 140 L700 200"/>
+            </g>
+            <g fill="currentColor">
+              <circle cx="80" cy="200" r="2.2" opacity="0.35"/>
+              <circle cx="160" cy="90" r="2.8" opacity="0.4"/>
+              <circle cx="260" cy="140" r="2" opacity="0.3"/>
+              <circle cx="340" cy="60" r="3" opacity="0.45"/>
+              <circle cx="420" cy="120" r="2.2" opacity="0.35"/>
+              <circle cx="520" cy="70" r="2.5" opacity="0.4"/>
+              <circle cx="620" cy="150" r="2" opacity="0.3"/>
+              <circle cx="720" cy="100" r="2.6" opacity="0.38"/>
+              <circle cx="220" cy="160" r="1.8" opacity="0.28"/>
+              <circle cx="400" cy="130" r="2.1" opacity="0.32"/>
+              <circle cx="600" cy="140" r="1.9" opacity="0.28"/>
+            </g>
+            <circle cx="340" cy="60" r="18" fill="url(#starGlow)"/>
+            <circle cx="520" cy="70" r="14" fill="url(#starGlow)"/>
+          </svg>
+        </div>
+        <div class="const-inner">
+          <h3>设计时间线</h3>
+          <p class="lead">这不是一份说明书，而是一面愿意陪你久一点的时钟：从「记住所选」到「安静地呈现」，每一步都为同一件事服务——让时间可见，却不喧哗。</p>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="when">01 · 记忆</div>
+              <div class="what">本机缓存出生点与偏好</div>
+              <div class="why">下次打开直接恢复，无需重复输入。主题、称呼、心率估算与显示偏好一并保存，形成完整的个人状态。</div>
+            </div>
+            <div class="timeline-item">
+              <div class="when">02 · 度量</div>
+              <div class="what">日历级分解 + 累计秒数</div>
+              <div class="why">年/月/日按真实日历进位；小时分钟秒与系统时钟同源。累计天/周/心跳全部由同一 totalMs 推导，避免面板之间互相打架。</div>
+            </div>
+            <div class="timeline-item">
+              <div class="when">03 · 叙事</div>
+              <div class="what">里程碑、章节与今日/今年进度环</div>
+              <div class="why">数字之外，用进度与章节告诉你「你在哪一段路上」。诗句轻声轮播，不打断，只陪伴。</div>
+            </div>
+            <div class="timeline-item">
+              <div class="when">04 · 气质</div>
+              <div class="what">暖光 / 暮色 / 墨蓝 三套主题</div>
+              <div class="why">偏 Claude 式的克制艺术感：纸感底、柔和光晕、衬线标题、充足留白。界面像一本打开的册页，而不是仪表盘的噪音。</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card journal cornered">
+        <h3>时间札记</h3>
+        <p class="lead">一组关于「如何看待时间」的短文。它们不改变任何计算，只希望在数字旁边留下一点温度。</p>
+        <div class="journal-grid">
+          <article class="journal-card">
+            <div class="glyph">一</div>
+            <h4>秒针的诚实</h4>
+            <p>秒针从不假装温柔，也不故意残酷。它只是一下一下地走。生命时钟把这份诚实放在眼前：不是为了制造焦虑，而是提醒你——你还在场。</p>
+          </article>
+          <article class="journal-card">
+            <div class="glyph">二</div>
+            <h4>缓存的意义</h4>
+            <p>把出生时间记在本机，等于给未来的自己留了一扇门。不必每次重新填表，打开就能继续。记忆本身，也可以很轻。</p>
+          </article>
+          <article class="journal-card">
+            <div class="glyph">三</div>
+            <h4>进度不是审判</h4>
+            <p>今日进度、今年进度、到八十岁的弧线，都是坐标，不是成绩单。走到哪里，就在哪里发光；停下来，也仍然是你的时间。</p>
+          </article>
+          <article class="journal-card">
+            <div class="glyph">四</div>
+            <h4>章节感</h4>
+            <p>童年、少年、青年、而立……名字只是约定。真正的章节，是你记得的面孔、做过的选择，以及那些愿意再来一次的日子。</p>
+          </article>
+          <article class="journal-card">
+            <div class="glyph">五</div>
+            <h4>心跳的隐喻</h4>
+            <p>以静息心率估算跳动次数，并不是医学结论，而是一种诗意近似：时间流过身体时，也会留下节律。你可以按自己的感受调整 bpm。</p>
+          </article>
+          <article class="journal-card">
+            <div class="glyph">六</div>
+            <h4>留白</h4>
+            <p>好的界面像好的房间：有光、有影、有可以呼吸的空隙。暖色纸感、柔焦光斑、克制动效——都是为了让数字不必大声说话。</p>
+          </article>
+          <article class="journal-card">
+            <div class="glyph">七</div>
+            <h4>里程碑</h4>
+            <p>一万天、十亿秒、三十岁……它们像路旁的石头。路过时可以摸一下，不必驻足太久。下一块石头，仍在同一条路上。</p>
+          </article>
+          <article class="journal-card">
+            <div class="glyph">八</div>
+            <h4>三种光</h4>
+            <p>暖光像午后纸页，暮色像书房灯，墨蓝像深夜屏幕。同一套结构，不同色温——因为人在不同时刻，需要不同的安静。</p>
+          </article>
+          <article class="journal-card">
+            <div class="glyph">九</div>
+            <h4>只在本机</h4>
+            <p>没有账号，没有云同步，没有悄悄上传。你的起点只存在于这台设备的浏览器里。换机或清站点数据后，像翻开新的一页。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card panel cornered" style="padding: 0; overflow: hidden;">
+        <img src="assets/ornament.svg" alt="生命时钟视觉装饰：柔和时钟与星座线条" width="960" height="540" style="display:block;width:100%;height:auto;opacity:0.95;" loading="lazy" />
+      </section>
+
+      <section class="card faq cornered">
+        <h3>常见问题</h3>
+        <details class="faq-item">
+          <summary>下次打开还会记得我的设置吗？</summary>
+          <div class="ans">会。出生时间、主题（暖光/暮色/墨蓝）、称呼、心率估算、秒表强调与诗句轮播都会写入浏览器 localStorage。只要不清除站点数据或点击「清除本地记录」，下次打开会自动恢复并继续计时。</div>
+        </details>
+        <details class="faq-item">
+          <summary>为什么年月日和「总天数」看起来对不上？</summary>
+          <div class="ans">主时钟的年/月/日是「日历差」：例如 1 年 2 个月 3 天。总天数则是把整段时长换算成完整的 24 小时天。两者定义不同，但都来自同一段从出生到现在的时间。</div>
+        </details>
+        <details class="faq-item">
+          <summary>可以填写未来的日期吗？</summary>
+          <div class="ans">不可以。出生时间必须早于或等于当前时刻。若检测到未来时间，会提示错误且不会启动时钟。</div>
+        </details>
+        <details class="faq-item">
+          <summary>心跳次数准确吗？</summary>
+          <div class="ans">这是按你设定的静息心率（默认 70 bpm）做的线性估算，用于感受量级，并非医疗监测。你可以在偏好里把 bpm 调到 40–120 之间的任意值。</div>
+        </details>
+        <details class="faq-item">
+          <summary>数据会离开我的电脑吗？</summary>
+          <div class="ans">不会。本页为纯前端单页，计算与存储都在本机完成。可选加载的 Google Fonts 仅用于字体样式，不包含你的出生数据。</div>
+        </details>
+        <details class="faq-item">
+          <summary>如何彻底清除？</summary>
+          <div class="ans">点击「清除本地记录」即可删除缓存的出生点与偏好（当前主题会保留以便界面不跳变）。也可在浏览器设置中清除本站的本地存储。</div>
+        </details>
+        <details class="faq-item">
+          <summary>离线或直接双击打开可以用吗？</summary>
+          <div class="ans">可以。本页为单文件 + 可选本地装饰图，使用经典脚本（非 ES module），支持 file:// 直接打开。若字体 CDN 不可用，会回退到系统字体，功能不受影响。</div>
+        </details>
+        <details class="faq-item">
+          <summary>旧版只保存了出生时间怎么办？</summary>
+          <div class="ans">首次加载会自动读取旧键 life-clock-birth，迁移到新的状态对象（含主题与偏好），并尽量清理旧键。你无需手动操作。</div>
+        </details>
+      </section>
+
+      <section class="card design-notes cornered">
+        <h3>使用小贴士</h3>
+        <div class="notes-grid">
+          <article>
+            <h4>第一次使用</h4>
+            <p>选择出生年月日（时刻可选）→ 点「开始计时」。绿色提示出现后，设置已写入本机。下次打开同一浏览器，会看到「已从本机恢复上次设置」。</p>
+          </article>
+          <article>
+            <h4>换主题</h4>
+            <p>右上角「暖光 / 暮色 / 墨蓝」即时切换。主题偏好会随状态一起缓存，重开页面仍是你上次的选择。</p>
+          </article>
+          <article>
+            <h4>称呼与心率</h4>
+            <p>可选填写称呼，会显示在问候语中。心率仅用于估算累计心跳，可按自我感受在 40–120 之间调节；修改后会自动保存。</p>
+          </article>
+          <article>
+            <h4>进度环怎么读</h4>
+            <p>今日：从 0 点到现在；今年：从元旦到现在；至 80 岁：从出生到期望寿命节点的比例。它们是坐标，不是考核。</p>
+          </article>
+        </div>
+      </section>
     </div>
 
-    <footer>数据仅保存在本机浏览器 · 主时钟 / 累计 / 心跳 / 里程碑 均与系统时间同步</footer>
+    <footer class="site-footer">
+      数据仅保存在本机浏览器
+      <span class="sep">·</span>
+      主时钟 / 累计 / 心跳 / 里程碑 均与系统时间同步
+      <span class="sep">·</span>
+      生命时钟 Life Clock
+      <br />
+      设置缓存 · 主题记忆 · 日历精度 · 安静界面 · 纯前端本地运行 · 下次打开自动恢复
+    </footer>
   </div>
 
   <script>
-    const STORAGE_KEY = "life-clock-birth";
+    /* ========================================================================
+       Life Clock core — pure functions exposed for tests via LifeClockCore
+       ======================================================================== */
+    const STORAGE_KEY = "life-clock-state";
+    const LEGACY_BIRTH_KEY = "life-clock-birth";
+    const STORAGE_VERSION = 2;
 
-    const els = {
-      form: document.getElementById("birthForm"),
-      birthDate: document.getElementById("birthDate"),
-      birthTime: document.getElementById("birthTime"),
-      hint: document.getElementById("hint"),
-      clearBtn: document.getElementById("clearBtn"),
-      emptyState: document.getElementById("emptyState"),
-      clockPanel: document.getElementById("clockPanel"),
-      detailPanel: document.getElementById("detailPanel"),
-      birthDisplay: document.getElementById("birthDisplay"),
-      nowDisplay: document.getElementById("nowDisplay"),
-      y: document.getElementById("y"),
-      mo: document.getElementById("mo"),
-      d: document.getElementById("d"),
-      h: document.getElementById("h"),
-      mi: document.getElementById("mi"),
-      s: document.getElementById("s"),
-      totalDays: document.getElementById("totalDays"),
-      totalHours: document.getElementById("totalHours"),
-      totalMinutes: document.getElementById("totalMinutes"),
-      totalSeconds: document.getElementById("totalSeconds"),
-      totalWeeks: document.getElementById("totalWeeks"),
-      heartbeats: document.getElementById("heartbeats"),
-      milestones: document.getElementById("milestones"),
+    const DEFAULT_STATE = {
+      version: STORAGE_VERSION,
+      birthISO: null,
+      theme: "warm",
+      displayName: "",
+      bpm: 70,
+      tickEmphasis: true,
+      quoteRotate: true,
     };
 
-    let birthDate = null;
-    let rafId = null;
-    let lastSec = -1;
-    let lastBeat = -1;
-    let lastMinute = -1;
+    const QUOTES = [
+      "时间不会倒流，但每一秒都在书写你的故事",
+      "我们不是被时间推着走，而是与时间并肩前行",
+      "年华可数，心意不可估",
+      "把今天过好，就是对漫长人生最好的回答",
+      "秒针很轻，落在回忆里却很重",
+      "你走过的每一步，都已写进这面时钟",
+      "慢一点也没关系，活着本身就是在前进",
+      "此刻之前的全部时光，都在为你铺路",
+      "数字只是刻度，感受才是长度",
+      "黎明与深夜之间，藏着你完整的一天",
+      "不必追赶光阴，你本就在光阴之中",
+      "岁月沉默，却为认真生活的人留下回声",
+    ];
 
-    // Average resting heart rate used for estimate
-    const BPM = 70;
+    const POEMS = [
+      "我们用秒针丈量日常，却用年轮理解自己。",
+      "时钟不催促任何人，它只是诚实地数着。",
+      "你站在今天，回望出生的那一秒——中间是全部的你。",
+      "温柔地对待时间，它也会温柔地留下痕迹。",
+      "不是时间带走了什么，是我们在时间里成为了谁。",
+    ];
 
     const MILESTONES = [
       { name: "一万天", days: 10000 },
       { name: "一万小时", days: 10000 / 24 },
       { name: "十亿秒", days: 1e9 / 86400 },
       { name: "2 万天", days: 20000 },
+      { name: "18 岁", years: 18 },
       { name: "30 岁", years: 30 },
       { name: "50 岁", years: 50 },
       { name: "80 岁", years: 80 },
+    ];
+
+    const CHAPTERS = [
+      { from: 0, to: 6, title: "童年", desc: "好奇与依赖，世界刚刚展开" },
+      { from: 6, to: 12, title: "少年", desc: "学习与玩耍交织的时光" },
+      { from: 12, to: 18, title: "青春期", desc: "自我意识慢慢成形" },
+      { from: 18, to: 30, title: "青年", desc: "选择、试错与远方" },
+      { from: 30, to: 45, title: "而立", desc: "责任与创造并行" },
+      { from: 45, to: 60, title: "不惑", desc: "更懂取舍与温柔" },
+      { from: 60, to: 80, title: "花甲之后", desc: "沉淀与从容" },
+      { from: 80, to: 120, title: "期颐之境", desc: "时间赠予的稀有段落" },
     ];
 
     function pad(n, len = 2) {
@@ -757,13 +2456,18 @@
         mm = parts[1] || 0;
         ss = parts[2] || 0;
       }
-      return new Date(y, m - 1, d, hh, mm, ss, 0);
+      const dt = new Date(y, m - 1, d, hh, mm, ss, 0);
+      if (Number.isNaN(dt.getTime())) return null;
+      return dt;
     }
 
     /** Calendar-aware Y/M/D + time breakdown */
     function diffBreakdown(from, to) {
-      if (to < from) {
+      if (!(from instanceof Date) || !(to instanceof Date)) {
         return { years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0, totalMs: 0 };
+      }
+      if (to < from) {
+        return { years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0, totalMs: to - from };
       }
 
       let years = to.getFullYear() - from.getFullYear();
@@ -786,7 +2490,6 @@
         days -= 1;
       }
       if (days < 0) {
-        // days in previous month relative to `to`
         const prevMonth = new Date(to.getFullYear(), to.getMonth(), 0);
         days += prevMonth.getDate();
         months -= 1;
@@ -807,34 +2510,105 @@
       };
     }
 
-    function setHint(msg, type = "") {
-      els.hint.textContent = msg;
-      els.hint.className = "hint" + (type ? " " + type : "");
+    function computeTotals(totalMs, bpm) {
+      const safeMs = Math.max(0, totalMs);
+      const b = Math.min(120, Math.max(40, Number(bpm) || 70));
+      const totalSec = Math.floor(safeMs / 1000);
+      const totalMin = Math.floor(safeMs / 60000);
+      const totalHr = Math.floor(safeMs / 3600000);
+      const totalDay = Math.floor(safeMs / 86400000);
+      const totalWeek = Math.floor(safeMs / (7 * 86400000));
+      const heartbeats = Math.floor((safeMs / 1000) * (b / 60));
+      return { totalSec, totalMin, totalHr, totalDay, totalWeek, heartbeats, bpm: b };
     }
 
-    function saveBirth(date) {
-      localStorage.setItem(STORAGE_KEY, date.toISOString());
+    function validateBirth(date, now = new Date()) {
+      if (!date || Number.isNaN(date.getTime())) {
+        return { ok: false, reason: "invalid" };
+      }
+      if (date > now) {
+        return { ok: false, reason: "future" };
+      }
+      return { ok: true };
     }
 
-    function loadBirth() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return null;
-      const d = new Date(raw);
-      return Number.isNaN(d.getTime()) ? null : d;
+    function serializeState(state) {
+      const s = { ...DEFAULT_STATE, ...state, version: STORAGE_VERSION };
+      if (s.birthISO instanceof Date) {
+        s.birthISO = s.birthISO.toISOString();
+      }
+      s.bpm = Math.min(120, Math.max(40, Number(s.bpm) || 70));
+      s.theme = ["warm", "dark", "ink"].includes(s.theme) ? s.theme : "warm";
+      s.displayName = String(s.displayName || "").slice(0, 24);
+      s.tickEmphasis = !!s.tickEmphasis;
+      s.quoteRotate = !!s.quoteRotate;
+      return JSON.stringify(s);
     }
 
-    function fillFormFromBirth(date) {
-      const y = date.getFullYear();
-      const m = pad(date.getMonth() + 1);
-      const d = pad(date.getDate());
-      els.birthDate.value = `${y}-${m}-${d}`;
-      els.birthTime.value = `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+    function deserializeState(raw) {
+      if (!raw) return { ...DEFAULT_STATE };
+      // Legacy: plain ISO string
+      if (raw.startsWith && (raw.startsWith("20") || raw.startsWith("19")) && raw.length >= 20 && raw.includes("T")) {
+        try {
+          const d = new Date(raw);
+          if (!Number.isNaN(d.getTime())) {
+            return { ...DEFAULT_STATE, birthISO: d.toISOString() };
+          }
+        } catch (_) { /* fall through */ }
+      }
+      try {
+        const parsed = JSON.parse(raw);
+        if (typeof parsed === "string") {
+          const d = new Date(parsed);
+          if (!Number.isNaN(d.getTime())) {
+            return { ...DEFAULT_STATE, birthISO: d.toISOString() };
+          }
+        }
+        return {
+          ...DEFAULT_STATE,
+          ...parsed,
+          version: STORAGE_VERSION,
+          bpm: Math.min(120, Math.max(40, Number(parsed.bpm) || 70)),
+          theme: ["warm", "dark", "ink"].includes(parsed.theme) ? parsed.theme : "warm",
+          displayName: String(parsed.displayName || "").slice(0, 24),
+          tickEmphasis: parsed.tickEmphasis !== false,
+          quoteRotate: parsed.quoteRotate !== false,
+          birthISO: parsed.birthISO || null,
+        };
+      } catch (_) {
+        // Try as ISO date string without JSON
+        const d = new Date(raw);
+        if (!Number.isNaN(d.getTime())) {
+          return { ...DEFAULT_STATE, birthISO: d.toISOString() };
+        }
+        return { ...DEFAULT_STATE };
+      }
     }
 
-    function showClock(show) {
-      els.emptyState.classList.toggle("hidden", show);
-      els.clockPanel.classList.toggle("hidden", !show);
-      els.detailPanel.classList.toggle("hidden", !show);
+    function createStorageAdapter(store) {
+      return {
+        save(state) {
+          store.setItem(STORAGE_KEY, serializeState(state));
+        },
+        load() {
+          let raw = store.getItem(STORAGE_KEY);
+          if (!raw) {
+            const legacy = store.getItem(LEGACY_BIRTH_KEY);
+            if (legacy) {
+              const migrated = deserializeState(legacy);
+              store.setItem(STORAGE_KEY, serializeState(migrated));
+              try { store.removeItem(LEGACY_BIRTH_KEY); } catch (_) { /* ignore */ }
+              return migrated;
+            }
+            return { ...DEFAULT_STATE };
+          }
+          return deserializeState(raw);
+        },
+        clear() {
+          store.removeItem(STORAGE_KEY);
+          try { store.removeItem(LEGACY_BIRTH_KEY); } catch (_) { /* ignore */ }
+        },
+      };
     }
 
     function addYears(date, years) {
@@ -862,6 +2636,196 @@
       return `还剩 ${minutes} 分 ${pad(seconds)} 秒`;
     }
 
+    function dayProgress(now) {
+      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      return (now - start) / 86400000;
+    }
+
+    function yearProgress(now) {
+      const start = new Date(now.getFullYear(), 0, 1);
+      const end = new Date(now.getFullYear() + 1, 0, 1);
+      return (now - start) / (end - start);
+    }
+
+    function weekProgress(now) {
+      // Monday-based week
+      const day = (now.getDay() + 6) % 7;
+      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 7);
+      return (now - start) / (end - start);
+    }
+
+    function monthProgress(now) {
+      const start = new Date(now.getFullYear(), now.getMonth(), 1);
+      const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      return (now - start) / (end - start);
+    }
+
+    function daysInMonth(now) {
+      return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    }
+
+    function setRing(el, pct) {
+      const r = 40;
+      const c = 2 * Math.PI * r;
+      const p = Math.min(1, Math.max(0, pct));
+      el.style.strokeDasharray = String(c);
+      el.style.strokeDashoffset = String(c * (1 - p));
+    }
+
+    // Expose pure API for unit tests (browser + Node extract)
+    const LifeClockCore = {
+      STORAGE_KEY,
+      LEGACY_BIRTH_KEY,
+      STORAGE_VERSION,
+      DEFAULT_STATE,
+      pad,
+      formatNumber,
+      formatDateTime,
+      formatBirth,
+      parseBirthInput,
+      diffBreakdown,
+      computeTotals,
+      validateBirth,
+      serializeState,
+      deserializeState,
+      createStorageAdapter,
+      addYears,
+      formatRemain,
+      dayProgress,
+      yearProgress,
+      weekProgress,
+      monthProgress,
+      daysInMonth,
+      MILESTONES,
+      CHAPTERS,
+      QUOTES,
+    };
+
+    if (typeof window !== "undefined") {
+      window.LifeClockCore = LifeClockCore;
+    }
+    if (typeof globalThis !== "undefined") {
+      globalThis.LifeClockCore = LifeClockCore;
+    }
+
+    /* ========================================================================
+       UI layer
+       ======================================================================== */
+    const storage = createStorageAdapter(window.localStorage);
+
+    const els = {
+      form: document.getElementById("birthForm"),
+      birthDate: document.getElementById("birthDate"),
+      birthTime: document.getElementById("birthTime"),
+      displayName: document.getElementById("displayName"),
+      bpmInput: document.getElementById("bpmInput"),
+      tickEmphasis: document.getElementById("tickEmphasis"),
+      quoteRotate: document.getElementById("quoteRotate"),
+      hint: document.getElementById("hint"),
+      clearBtn: document.getElementById("clearBtn"),
+      emptyState: document.getElementById("emptyState"),
+      clockPanel: document.getElementById("clockPanel"),
+      detailPanel: document.getElementById("detailPanel"),
+      extraPanel: document.getElementById("extraPanel"),
+      storyPanel: document.getElementById("storyPanel"),
+      birthDisplay: document.getElementById("birthDisplay"),
+      nowDisplay: document.getElementById("nowDisplay"),
+      greetLine: document.getElementById("greetLine"),
+      y: document.getElementById("y"),
+      mo: document.getElementById("mo"),
+      d: document.getElementById("d"),
+      h: document.getElementById("h"),
+      mi: document.getElementById("mi"),
+      s: document.getElementById("s"),
+      secStat: document.getElementById("secStat"),
+      totalDays: document.getElementById("totalDays"),
+      totalHours: document.getElementById("totalHours"),
+      totalMinutes: document.getElementById("totalMinutes"),
+      totalSeconds: document.getElementById("totalSeconds"),
+      totalWeeks: document.getElementById("totalWeeks"),
+      heartbeats: document.getElementById("heartbeats"),
+      milestones: document.getElementById("milestones"),
+      chapters: document.getElementById("chapters"),
+      quote: document.getElementById("quote"),
+      poemLine: document.getElementById("poemLine"),
+      ringDay: document.getElementById("ringDay"),
+      ringYear: document.getElementById("ringYear"),
+      ringLife: document.getElementById("ringLife"),
+      ringDayVal: document.getElementById("ringDayVal"),
+      ringYearVal: document.getElementById("ringYearVal"),
+      ringLifeVal: document.getElementById("ringLifeVal"),
+      weekPct: document.getElementById("weekPct"),
+      monthPct: document.getElementById("monthPct"),
+      monthDaysHint: document.getElementById("monthDaysHint"),
+      lifePermille: document.getElementById("lifePermille"),
+    };
+
+    let prefs = { ...DEFAULT_STATE };
+    let birthDate = null;
+    let rafId = null;
+    let lastSec = -1;
+    let lastBeat = -1;
+    let lastMinute = -1;
+    let quoteIdx = 0;
+    let lastQuoteAt = 0;
+
+    function setHint(msg, type = "") {
+      els.hint.textContent = msg;
+      els.hint.className = "hint" + (type ? " " + type : "");
+    }
+
+    function applyTheme(theme) {
+      const t = ["warm", "dark", "ink"].includes(theme) ? theme : "warm";
+      document.documentElement.setAttribute("data-theme", t);
+      document.querySelectorAll("[data-theme-btn]").forEach((btn) => {
+        btn.setAttribute("aria-pressed", btn.getAttribute("data-theme-btn") === t ? "true" : "false");
+      });
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) {
+        meta.setAttribute("content", t === "warm" ? "#f6f1ea" : t === "dark" ? "#0f0e0d" : "#0a0c12");
+      }
+      prefs.theme = t;
+    }
+
+    function persist() {
+      storage.save({
+        ...prefs,
+        birthISO: birthDate ? birthDate.toISOString() : prefs.birthISO,
+      });
+    }
+
+    function readFormPrefs() {
+      prefs.displayName = (els.displayName.value || "").trim().slice(0, 24);
+      prefs.bpm = Math.min(120, Math.max(40, Number(els.bpmInput.value) || 70));
+      prefs.tickEmphasis = !!els.tickEmphasis.checked;
+      prefs.quoteRotate = !!els.quoteRotate.checked;
+    }
+
+    function fillFormFromState(state) {
+      if (state.birthISO) {
+        const date = new Date(state.birthISO);
+        if (!Number.isNaN(date.getTime())) {
+          els.birthDate.value = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+          els.birthTime.value = `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+        }
+      }
+      els.displayName.value = state.displayName || "";
+      els.bpmInput.value = String(state.bpm || 70);
+      els.tickEmphasis.checked = state.tickEmphasis !== false;
+      els.quoteRotate.checked = state.quoteRotate !== false;
+    }
+
+    function showClock(show) {
+      els.emptyState.classList.toggle("hidden", show);
+      els.clockPanel.classList.toggle("hidden", !show);
+      els.detailPanel.classList.toggle("hidden", !show);
+      els.extraPanel.classList.toggle("hidden", !show);
+      els.storyPanel.classList.toggle("hidden", !show);
+    }
+
     function renderMilestones(from, now, elapsedDaysExact) {
       const items = MILESTONES.map((m) => {
         let target;
@@ -882,12 +2846,12 @@
         };
       })
         .sort((a, b) => a.target - b.target)
-        .slice(0, 5);
+        .slice(0, 6);
 
       els.milestones.innerHTML = items
         .map(
           (item) => `
-        <div class="milestone">
+        <div class="milestone${item.done ? " done" : ""}">
           <div class="top">
             <span class="name">${item.name}${item.done ? " ✓" : ""}</span>
             <span class="remain">${item.remainText}</span>
@@ -898,14 +2862,49 @@
         .join("");
     }
 
+    function renderChapters(ageYears) {
+      els.chapters.innerHTML = CHAPTERS.map((ch) => {
+        let status = "future";
+        let statusText = "未至";
+        if (ageYears >= ch.to) {
+          status = "past";
+          statusText = "已走过";
+        } else if (ageYears >= ch.from) {
+          status = "current";
+          statusText = "进行中";
+        }
+        return `
+          <div class="chapter ${status}">
+            <div class="age">${ch.from}–${ch.to}</div>
+            <div>
+              <div class="title">${ch.title}</div>
+              <div class="desc">${ch.desc}</div>
+            </div>
+            <div class="status">${statusText}</div>
+          </div>`;
+      }).join("");
+    }
+
     function setMetric(el, html, bump) {
       el.innerHTML = html;
       if (bump) {
         el.classList.remove("bump");
-        // Force reflow so animation restarts
         void el.offsetWidth;
         el.classList.add("bump");
       }
+    }
+
+    function updateQuote(nowMs) {
+      if (!prefs.quoteRotate) return;
+      if (nowMs - lastQuoteAt < 12000) return;
+      lastQuoteAt = nowMs;
+      quoteIdx = (quoteIdx + 1) % QUOTES.length;
+      els.quote.classList.add("fade");
+      setTimeout(() => {
+        els.quote.textContent = QUOTES[quoteIdx];
+        els.poemLine.textContent = POEMS[quoteIdx % POEMS.length];
+        els.quote.classList.remove("fade");
+      }, 400);
     }
 
     function tick() {
@@ -920,8 +2919,14 @@
         return;
       }
 
+      const name = (prefs.displayName || "").trim();
+      els.greetLine.textContent = name ? `你好，${name}` : "你好，时间旅人";
       els.birthDisplay.textContent = formatBirth(birthDate);
       els.nowDisplay.textContent = "现在 · " + formatDateTime(now);
+      const specimen = document.getElementById("specimenMono");
+      if (specimen) {
+        specimen.textContent = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} · ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} · ${prefs.theme}`;
+      }
 
       els.y.textContent = formatNumber(diff.years);
       els.mo.textContent = formatNumber(diff.months);
@@ -929,37 +2934,52 @@
       els.h.textContent = formatNumber(diff.hours);
       els.mi.textContent = formatNumber(diff.minutes);
       els.s.textContent = formatNumber(diff.seconds);
+      els.secStat.classList.toggle("tick", prefs.tickEmphasis);
 
-      // All cumulative values derive from the same live timestamp
-      const totalMs = diff.totalMs;
-      const totalSec = Math.floor(totalMs / 1000);
-      const totalMin = Math.floor(totalMs / 60000);
-      const totalHr = Math.floor(totalMs / 3600000);
-      const totalDay = Math.floor(totalMs / 86400000);
-      const totalWeek = Math.floor(totalMs / (7 * 86400000));
-      // Heartbeats: 70 bpm → 70/60 beats per second, updates as time advances
-      const beats = Math.floor((totalMs / 1000) * (BPM / 60));
-      const elapsedDaysExact = totalMs / 86400000;
+      const totals = computeTotals(diff.totalMs, prefs.bpm);
+      const elapsedDaysExact = Math.max(0, diff.totalMs) / 86400000;
 
-      const secChanged = totalSec !== lastSec;
-      const beatChanged = beats !== lastBeat;
-      const minChanged = totalMin !== lastMinute;
+      const secChanged = totals.totalSec !== lastSec;
+      const beatChanged = totals.heartbeats !== lastBeat;
+      const minChanged = totals.totalMin !== lastMinute;
 
-      setMetric(els.totalDays, `${formatNumber(totalDay)} <small>天</small>`, false);
-      setMetric(els.totalHours, `${formatNumber(totalHr)} <small>小时</small>`, false);
-      setMetric(els.totalMinutes, `${formatNumber(totalMin)} <small>分</small>`, minChanged);
-      setMetric(els.totalSeconds, `${formatNumber(totalSec)} <small>秒</small>`, secChanged);
-      setMetric(els.totalWeeks, `${formatNumber(totalWeek)} <small>周</small>`, false);
-      setMetric(els.heartbeats, `${formatNumber(beats)} <small>次</small>`, beatChanged);
+      setMetric(els.totalDays, `${formatNumber(totals.totalDay)} <small>天</small>`, false);
+      setMetric(els.totalHours, `${formatNumber(totals.totalHr)} <small>小时</small>`, false);
+      setMetric(els.totalMinutes, `${formatNumber(totals.totalMin)} <small>分</small>`, minChanged);
+      setMetric(els.totalSeconds, `${formatNumber(totals.totalSec)} <small>秒</small>`, secChanged);
+      setMetric(els.totalWeeks, `${formatNumber(totals.totalWeek)} <small>周</small>`, false);
+      setMetric(els.heartbeats, `${formatNumber(totals.heartbeats)} <small>次 · ${totals.bpm}bpm</small>`, beatChanged);
 
-      // Milestones: refresh countdown every second (same clock source)
+      // Progress rings
+      const dp = dayProgress(now);
+      const yp = yearProgress(now);
+      const lifeSpanMs = addYears(birthDate, 80) - birthDate;
+      const lp = lifeSpanMs > 0 ? Math.min(1, Math.max(0, diff.totalMs / lifeSpanMs)) : 0;
+      setRing(els.ringDay, dp);
+      setRing(els.ringYear, yp);
+      setRing(els.ringLife, lp);
+      els.ringDayVal.textContent = (dp * 100).toFixed(1) + "%";
+      els.ringYearVal.textContent = (yp * 100).toFixed(1) + "%";
+      els.ringLifeVal.textContent = (lp * 100).toFixed(1) + "%";
+
+      // Insights
+      const wp = weekProgress(now);
+      const mp = monthProgress(now);
+      els.weekPct.textContent = (wp * 100).toFixed(1) + "%";
+      els.monthPct.textContent = (mp * 100).toFixed(1) + "%";
+      els.monthDaysHint.textContent = `本月共 ${daysInMonth(now)} 天`;
+      els.lifePermille.textContent = (lp * 1000).toFixed(1) + "‰";
+
       if (secChanged || lastSec === -1) {
         renderMilestones(birthDate, now, elapsedDaysExact);
+        renderChapters(diff.years + diff.months / 12 + diff.days / 365);
       }
 
-      lastSec = totalSec;
-      lastBeat = beats;
-      lastMinute = totalMin;
+      updateQuote(now.getTime());
+
+      lastSec = totals.totalSec;
+      lastBeat = totals.heartbeats;
+      lastMinute = totals.totalMin;
     }
 
     function loop() {
@@ -976,9 +2996,11 @@
 
     function start(date) {
       birthDate = date;
+      prefs.birthISO = date.toISOString();
       lastSec = -1;
       lastBeat = -1;
       lastMinute = -1;
+      lastQuoteAt = 0;
       showClock(true);
       stopLoop();
       loop();
@@ -986,42 +3008,78 @@
 
     els.form.addEventListener("submit", (e) => {
       e.preventDefault();
+      readFormPrefs();
       const date = parseBirthInput(els.birthDate.value, els.birthTime.value);
-      if (!date || Number.isNaN(date.getTime())) {
-        setHint("请输入有效的出生日期", "err");
+      const v = validateBirth(date, new Date());
+      if (!v.ok) {
+        setHint(v.reason === "future" ? "出生时间不能晚于现在" : "请输入有效的出生日期", "err");
         return;
       }
-      if (date > new Date()) {
-        setHint("出生时间不能晚于现在", "err");
-        return;
-      }
-      saveBirth(date);
-      setHint("已保存到本机，时钟正在运行", "ok");
+      persist();
+      setHint("已保存到本机，时钟正在运行 · 下次打开会自动恢复", "ok");
       start(date);
     });
 
+    // Live-save preference toggles when clock already running
+    function onPrefChange() {
+      readFormPrefs();
+      persist();
+      if (birthDate) {
+        setHint("偏好已更新并缓存", "ok");
+      }
+    }
+    els.bpmInput.addEventListener("change", onPrefChange);
+    els.tickEmphasis.addEventListener("change", onPrefChange);
+    els.quoteRotate.addEventListener("change", onPrefChange);
+    els.displayName.addEventListener("change", onPrefChange);
+
     els.clearBtn.addEventListener("click", () => {
-      localStorage.removeItem(STORAGE_KEY);
+      storage.clear();
       birthDate = null;
+      prefs = { ...DEFAULT_STATE, theme: prefs.theme };
+      persist();
       stopLoop();
       lastSec = -1;
       lastBeat = -1;
       lastMinute = -1;
       els.birthDate.value = "";
       els.birthTime.value = "";
+      els.displayName.value = "";
+      els.bpmInput.value = "70";
+      els.tickEmphasis.checked = true;
+      els.quoteRotate.checked = true;
       showClock(false);
-      setHint("已清除本地记录", "ok");
+      setHint("已清除本地记录（主题保留）", "ok");
     });
 
-    // Init max date = today
+    document.querySelectorAll("[data-theme-btn]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        applyTheme(btn.getAttribute("data-theme-btn"));
+        persist();
+      });
+    });
+
+    // Init
     const today = new Date();
     els.birthDate.max = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
 
-    const saved = loadBirth();
-    if (saved && saved <= new Date()) {
-      fillFormFromBirth(saved);
-      setHint("已从本机恢复上次设置", "ok");
-      start(saved);
+    const saved = storage.load();
+    prefs = { ...DEFAULT_STATE, ...saved };
+    applyTheme(prefs.theme);
+    fillFormFromState(prefs);
+
+    if (prefs.birthISO) {
+      const restored = new Date(prefs.birthISO);
+      const v = validateBirth(restored, new Date());
+      if (v.ok) {
+        setHint("已从本机恢复上次设置", "ok");
+        start(restored);
+      } else {
+        showClock(false);
+        if (v.reason === "future") {
+          setHint("缓存的出生时间无效（晚于现在），请重新设置", "err");
+        }
+      }
     } else {
       showClock(false);
     }
