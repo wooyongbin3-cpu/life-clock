@@ -1,5 +1,13 @@
 # 生命时钟 · Life Clock
 
+> **🚀 免费 Android App 即将发布！** 请查看 [免费发布指南](FREE_RELEASE_QUICKSTART.md)
+>
+> **文档导航：** 
+> - 👤 用户？→ [快速开始](#快速开始)
+> - 🛠️ 开发者？→ [开发指南](#开发)
+> - 🤖 AI Agent？→ [README_AGENT.md](README_AGENT.md) 
+> - 📋 交接事项？→ [HANDOFF.md](HANDOFF.md)
+
 从你的**出生年月日**起，实时显示已经活了多久——年、月、日、时、分、秒，以及累计时长与人生里程碑。
 
 纯前端单页应用，打开即可用，无需服务器、无需账号。
