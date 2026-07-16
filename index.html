@@ -756,6 +756,14 @@
       background-clip: text;
       color: transparent;
       font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+    }
+
+    /* Seconds run at display refresh with fractional precision */
+    #secStat .value {
+      font-size: clamp(1.2rem, 3.2vw, 1.75rem);
+      letter-spacing: -0.02em;
+      min-width: 4.6ch;
     }
 
     .stat .unit {
@@ -806,7 +814,9 @@
       stroke: url(#ringGrad);
       stroke-width: 6;
       stroke-linecap: round;
-      transition: stroke-dashoffset 0.6s ease;
+      /* No CSS transition — dashoffset is driven every RAF frame (~120Hz) */
+      will-change: stroke-dashoffset;
+      transform: translateZ(0);
     }
 
     .life-ring .ring-label {
@@ -2672,12 +2682,17 @@
       return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
     }
 
+    /** Circumference for r=40 rings — precomputed for zero alloc per frame */
+    const RING_C = 2 * Math.PI * 40;
+
     function setRing(el, pct) {
-      const r = 40;
-      const c = 2 * Math.PI * r;
       const p = Math.min(1, Math.max(0, pct));
-      el.style.strokeDasharray = String(c);
-      el.style.strokeDashoffset = String(c * (1 - p));
+      el.style.strokeDashoffset = String(RING_C * (1 - p));
+    }
+
+    /** Only write textContent when value actually changed (cheap dirty-check). */
+    function setTextIfChanged(el, text) {
+      if (el.textContent !== text) el.textContent = text;
     }
 
     // Expose pure API for unit tests (browser + Node extract)
@@ -2776,6 +2791,23 @@
     let lastMinute = -1;
     let quoteIdx = 0;
     let lastQuoteAt = 0;
+    /** Cached DOM strings to skip redundant writes at 120fps */
+    let lastSecText = "";
+    let lastRingDayText = "";
+    let lastRingYearText = "";
+    let lastRingLifeText = "";
+    let lastWeekText = "";
+    let lastMonthText = "";
+    let lastPermilleText = "";
+    let lastNowText = "";
+    let lastSpecimenText = "";
+    let lastY = "";
+    let lastMo = "";
+    let lastD = "";
+    let lastH = "";
+    let lastMi = "";
+    let lifeSpanMsCache = 0;
+    let lifeSpanBirthKey = "";
 
     function setHint(msg, type = "") {
       els.hint.textContent = msg;
@@ -2891,7 +2923,10 @@
     }
 
     function setMetric(el, html, bump) {
-      el.innerHTML = html;
+      if (el.__lastHtml !== html) {
+        el.__lastHtml = html;
+        el.innerHTML = html;
+      }
       if (bump) {
         el.classList.remove("bump");
         void el.offsetWidth;
@@ -2912,75 +2947,151 @@
       }, 400);
     }
 
+    function getLifeSpanMs(birth) {
+      const key = birth.getTime();
+      if (lifeSpanBirthKey !== key) {
+        lifeSpanBirthKey = key;
+        lifeSpanMsCache = addYears(birth, 80) - birth;
+      }
+      return lifeSpanMsCache;
+    }
+
+    /**
+     * High-refresh paint path (~60–120fps via requestAnimationFrame).
+     * - Every frame: fractional seconds + progress rings (GPU stroke-dashoffset)
+     * - On second / beat / minute change only: heavy counters & story panels
+     */
     function tick() {
       if (!birthDate) return;
       const now = new Date();
-      const diff = diffBreakdown(birthDate, now);
+      const nowMs = now.getTime();
+      const totalMs = nowMs - birthDate.getTime();
 
-      if (diff.totalMs < 0) {
+      if (totalMs < 0) {
         setHint("出生时间不能晚于当前时间", "err");
         showClock(false);
         stopLoop();
         return;
       }
 
-      const name = (prefs.displayName || "").trim();
-      els.greetLine.textContent = name ? `你好，${name}` : "你好，时间旅人";
-      els.birthDisplay.textContent = formatBirth(birthDate);
-      els.nowDisplay.textContent = "现在 · " + formatDateTime(now);
-      const specimen = document.getElementById("specimenMono");
-      if (specimen) {
-        specimen.textContent = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} · ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} · ${prefs.theme}`;
+      // —— Fast path every frame (smooth 120Hz) ——
+      // Age-based fractional seconds (not wall-clock): 05.847
+      const remMinMs = totalMs % 60000;
+      const ageSecWhole = Math.floor(remMinMs / 1000);
+      const ageMs = remMinMs % 1000;
+      const secText = pad(ageSecWhole) + "." + String(ageMs).padStart(3, "0");
+      if (secText !== lastSecText) {
+        lastSecText = secText;
+        els.s.textContent = secText;
       }
+      els.secStat.classList.toggle("tick", prefs.tickEmphasis !== false);
 
-      els.y.textContent = formatNumber(diff.years);
-      els.mo.textContent = formatNumber(diff.months);
-      els.d.textContent = formatNumber(diff.days);
-      els.h.textContent = formatNumber(diff.hours);
-      els.mi.textContent = formatNumber(diff.minutes);
-      els.s.textContent = formatNumber(diff.seconds);
-      els.secStat.classList.toggle("tick", prefs.tickEmphasis);
-
-      const totals = computeTotals(diff.totalMs, prefs.bpm);
-      const elapsedDaysExact = Math.max(0, diff.totalMs) / 86400000;
-
-      const secChanged = totals.totalSec !== lastSec;
-      const beatChanged = totals.heartbeats !== lastBeat;
-      const minChanged = totals.totalMin !== lastMinute;
-
-      setMetric(els.totalDays, `${formatNumber(totals.totalDay)} <small>天</small>`, false);
-      setMetric(els.totalHours, `${formatNumber(totals.totalHr)} <small>小时</small>`, false);
-      setMetric(els.totalMinutes, `${formatNumber(totals.totalMin)} <small>分</small>`, minChanged);
-      setMetric(els.totalSeconds, `${formatNumber(totals.totalSec)} <small>秒</small>`, secChanged);
-      setMetric(els.totalWeeks, `${formatNumber(totals.totalWeek)} <small>周</small>`, false);
-      setMetric(els.heartbeats, `${formatNumber(totals.heartbeats)} <small>次 · ${totals.bpm}bpm</small>`, beatChanged);
-
-      // Progress rings
       const dp = dayProgress(now);
       const yp = yearProgress(now);
-      const lifeSpanMs = addYears(birthDate, 80) - birthDate;
-      const lp = lifeSpanMs > 0 ? Math.min(1, Math.max(0, diff.totalMs / lifeSpanMs)) : 0;
+      const lifeSpanMs = getLifeSpanMs(birthDate);
+      const lp = lifeSpanMs > 0 ? Math.min(1, Math.max(0, totalMs / lifeSpanMs)) : 0;
+
       setRing(els.ringDay, dp);
       setRing(els.ringYear, yp);
       setRing(els.ringLife, lp);
-      els.ringDayVal.textContent = (dp * 100).toFixed(1) + "%";
-      els.ringYearVal.textContent = (yp * 100).toFixed(1) + "%";
-      els.ringLifeVal.textContent = (lp * 100).toFixed(1) + "%";
 
-      // Insights
-      const wp = weekProgress(now);
-      const mp = monthProgress(now);
-      els.weekPct.textContent = (wp * 100).toFixed(1) + "%";
-      els.monthPct.textContent = (mp * 100).toFixed(1) + "%";
-      els.monthDaysHint.textContent = `本月共 ${daysInMonth(now)} 天`;
-      els.lifePermille.textContent = (lp * 1000).toFixed(1) + "‰";
-
-      if (secChanged || lastSec === -1) {
-        renderMilestones(birthDate, now, elapsedDaysExact);
-        renderChapters(diff.years + diff.months / 12 + diff.days / 365);
+      // 2-decimal labels for rings (updates ~100×/s at most, dirty-checked)
+      const dayText = (dp * 100).toFixed(2) + "%";
+      const yearText = (yp * 100).toFixed(2) + "%";
+      const lifeText = (lp * 100).toFixed(2) + "%";
+      if (dayText !== lastRingDayText) {
+        lastRingDayText = dayText;
+        els.ringDayVal.textContent = dayText;
+      }
+      if (yearText !== lastRingYearText) {
+        lastRingYearText = yearText;
+        els.ringYearVal.textContent = yearText;
+      }
+      if (lifeText !== lastRingLifeText) {
+        lastRingLifeText = lifeText;
+        els.ringLifeVal.textContent = lifeText;
       }
 
-      updateQuote(now.getTime());
+      const wp = weekProgress(now);
+      const mp = monthProgress(now);
+      const weekText = (wp * 100).toFixed(2) + "%";
+      const monthText = (mp * 100).toFixed(2) + "%";
+      const permilleText = (lp * 1000).toFixed(2) + "‰";
+      if (weekText !== lastWeekText) {
+        lastWeekText = weekText;
+        els.weekPct.textContent = weekText;
+      }
+      if (monthText !== lastMonthText) {
+        lastMonthText = monthText;
+        els.monthPct.textContent = monthText;
+      }
+      if (permilleText !== lastPermilleText) {
+        lastPermilleText = permilleText;
+        els.lifePermille.textContent = permilleText;
+      }
+
+      const totals = computeTotals(totalMs, prefs.bpm);
+      const secChanged = totals.totalSec !== lastSec;
+      const beatChanged = totals.heartbeats !== lastBeat;
+      const minChanged = totals.totalMin !== lastMinute;
+      const firstPaint = lastSec === -1;
+
+      // —— Slow path: only when calendar units or totals change ——
+      if (secChanged || firstPaint) {
+        const diff = diffBreakdown(birthDate, now);
+
+        const name = (prefs.displayName || "").trim();
+        setTextIfChanged(els.greetLine, name ? `你好，${name}` : "你好，时间旅人");
+        setTextIfChanged(els.birthDisplay, formatBirth(birthDate));
+
+        const nowText = "现在 · " + formatDateTime(now);
+        if (nowText !== lastNowText) {
+          lastNowText = nowText;
+          els.nowDisplay.textContent = nowText;
+        }
+
+        const specimen = document.getElementById("specimenMono");
+        if (specimen) {
+          const specimenText = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} · ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} · ${prefs.theme}`;
+          if (specimenText !== lastSpecimenText) {
+            lastSpecimenText = specimenText;
+            specimen.textContent = specimenText;
+          }
+        }
+
+        const y = formatNumber(diff.years);
+        const mo = formatNumber(diff.months);
+        const d = formatNumber(diff.days);
+        const h = formatNumber(diff.hours);
+        const mi = formatNumber(diff.minutes);
+        if (y !== lastY) { lastY = y; els.y.textContent = y; }
+        if (mo !== lastMo) { lastMo = mo; els.mo.textContent = mo; }
+        if (d !== lastD) { lastD = d; els.d.textContent = d; }
+        if (h !== lastH) { lastH = h; els.h.textContent = h; }
+        if (mi !== lastMi) { lastMi = mi; els.mi.textContent = mi; }
+
+        setMetric(els.totalDays, `${formatNumber(totals.totalDay)} <small>天</small>`, false);
+        setMetric(els.totalHours, `${formatNumber(totals.totalHr)} <small>小时</small>`, false);
+        setMetric(els.totalMinutes, `${formatNumber(totals.totalMin)} <small>分</small>`, minChanged);
+        setMetric(els.totalSeconds, `${formatNumber(totals.totalSec)} <small>秒</small>`, secChanged);
+        setMetric(els.totalWeeks, `${formatNumber(totals.totalWeek)} <small>周</small>`, false);
+        setMetric(els.heartbeats, `${formatNumber(totals.heartbeats)} <small>次 · ${totals.bpm}bpm</small>`, beatChanged);
+
+        els.monthDaysHint.textContent = `本月共 ${daysInMonth(now)} 天`;
+
+        const elapsedDaysExact = Math.max(0, totalMs) / 86400000;
+        renderMilestones(birthDate, now, elapsedDaysExact);
+        renderChapters(diff.years + diff.months / 12 + diff.days / 365);
+
+        updateQuote(nowMs);
+      } else if (beatChanged || minChanged) {
+        if (minChanged) {
+          setMetric(els.totalMinutes, `${formatNumber(totals.totalMin)} <small>分</small>`, true);
+        }
+        if (beatChanged) {
+          setMetric(els.heartbeats, `${formatNumber(totals.heartbeats)} <small>次 · ${totals.bpm}bpm</small>`, true);
+        }
+      }
 
       lastSec = totals.totalSec;
       lastBeat = totals.heartbeats;
@@ -2999,6 +3110,27 @@
       }
     }
 
+    function resetRenderCache() {
+      lastSecText = "";
+      lastRingDayText = "";
+      lastRingYearText = "";
+      lastRingLifeText = "";
+      lastWeekText = "";
+      lastMonthText = "";
+      lastPermilleText = "";
+      lastNowText = "";
+      lastSpecimenText = "";
+      lastY = "";
+      lastMo = "";
+      lastD = "";
+      lastH = "";
+      lastMi = "";
+      lifeSpanBirthKey = "";
+      lifeSpanMsCache = 0;
+      [els.totalDays, els.totalHours, els.totalMinutes, els.totalSeconds, els.totalWeeks, els.heartbeats]
+        .forEach((el) => { if (el) el.__lastHtml = undefined; });
+    }
+
     function start(date) {
       birthDate = date;
       prefs.birthISO = date.toISOString();
@@ -3006,6 +3138,13 @@
       lastBeat = -1;
       lastMinute = -1;
       lastQuoteAt = 0;
+      resetRenderCache();
+      // Ensure ring dasharray is set once for high-fps stroke updates
+      if (els.ringDay) {
+        els.ringDay.style.strokeDasharray = String(RING_C);
+        els.ringYear.style.strokeDasharray = String(RING_C);
+        els.ringLife.style.strokeDasharray = String(RING_C);
+      }
       showClock(true);
       stopLoop();
       loop();
